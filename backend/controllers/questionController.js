@@ -1,10 +1,10 @@
-import questionModel from "../models/questions.js";
+import questionModel from "../models/question.js";
 
 export const addQuestion = async(req, res)=>{
    try{
-      const {question, optionA, optionB, optionC, correct}= req.body
+      const {quizId, question, options, correctAnswer}= req.body
       const newQuestion = new questionModel({
-         question, optionA, optionB, optionC, correct
+        quizId, question, options, correctAnswer
       })
       await newQuestion.save();
       return res.status(200).json({Success: "Question added successfully"})

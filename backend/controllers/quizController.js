@@ -1,27 +1,26 @@
-export const submitQuiz = async(req, res) => {
-   const { userId, answers } = req.body; // answers = [{ questionId: 1, selectedOption: "A" }, ...]
+import quizModel from "../models/quiz.js";
 
-   // Get correct answers from the database
-   const sql = "SELECT id, correct_answer FROM questions WHERE id IN (?)";
-   const questionIds = answers.map(a => a.questionId);
+export const addQuiz = async(req, res)=>{
+    try{
+        const {title, description, category} = req.body
+        const newQuiz = new quizModel({
+          title, description, category
+        })
+        await newQuiz.save();
+        return res.status(200).json({Success: "Quiz added successfully"})
+     }catch(e){
+        return res.status(500).json({Error: e.message})
+     }
+}
 
-   db.query(sql, [questionIds], (err, results) => {
-       if (err) return res.status(500).json({ error: err.message });
-
-       // Calculate score
-       let score = 0;
-       results.forEach((q) => {
-           const userAnswer = answers.find(a => a.questionId === q.id);
-           if (userAnswer && userAnswer.selectedOption === q.correct_answer) {
-               score += 1; // +1 for each correct answer
-           }
-       });
-
-       // Save score in the database
-       const saveScoreSql = "INSERT INTO scores (user_id, score, total_questions) VALUES (?, ?, ?)";
-       db.query(saveScoreSql, [userId, score, answers.length], (err) => {
-           if (err) return res.status(500).json({ error: err.message });
-           res.json({ message: "Quiz submitted!", score, totalQuestions: answers.length });
-       });
-   });
+export const getQuiz = async(req, res)=>{
+    try{
+        const quiz = await quizModel.find()
+        if(quiz.length === 0){
+           return res.status(404).json({msg: "No quiz found in database!"})
+        }
+        return res.status(200).json(quiz)
+     }catch(e){
+        return res.status(500).json({'Error': e.message})
+     }
 }
