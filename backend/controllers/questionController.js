@@ -24,3 +24,27 @@ export const getQuestions = async(req, res)=>{
       return res.status(500).json({'Error': e.message})
    }
 }
+
+export const getQuestion = async(req, res)=>{
+   try{
+      const questions = await questionModel.find({quizId: req.params.id})
+      if(questions.length === 0){
+         return res.status(404).json({msg: "No question found!"})
+      }
+      return res.status(200).json(questions)
+   }catch(e){
+      return res.status(500).json({'Error': e.message})
+   }
+}
+export const deleteQuestion = async(req, res)=>{
+   try{
+      const {id} = req.params
+      const deleteQuestionbyid = await questionModel.findByIdAndDelete(id)
+      if(!deleteQuestionbyid){ res.status(404).json({msg: "Question not found"})}
+      else{
+      res.status(200).json({msg: "Question deleted successfully!"})
+      }
+   }catch(e){
+      return res.status(500).json({'Error': e.messsage})
+   }
+}

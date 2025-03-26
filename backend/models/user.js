@@ -10,10 +10,14 @@ const userSchema = new mongoose.Schema({
       type: String,
       required: true
    },
+   token:{
+      type: String,
+      required: true
+   },
    role: { type: String, enum: ["user", "admin"], default: "user" },
    scores: [
       {
-      quizId:{type: mongoose.Schema.Types.ObjectId, ref: Quiz},
+      quizId:{type: mongoose.Schema.Types.ObjectId, ref: "quiz"},
       score:{},
       date:{type: Date, default: Date.now}
       }

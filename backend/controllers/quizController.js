@@ -13,6 +13,7 @@ export const addQuiz = async(req, res)=>{
      }
 }
 
+   
 export const getQuiz = async(req, res)=>{
     try{
         const quiz = await quizModel.find()
