@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
 
 const Quiz = () => {
     const { quizId } = useParams(); // Get quiz ID from URL
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchQuestions = async () => {
             try {
-                const response = await axios.get(`http://localhost:4030/questionbyquiz/${quizId}`);
+                const response = await axios.get(`http://localhost:4030/questionbyquiz/${quizId}`,
+                    {withCredentials: true});
                 setQuestions(response.data);
             } catch (error) {
+                navigate('/login')
                 console.error("Error fetching questions:", error);
             } finally {
                 setLoading(false);

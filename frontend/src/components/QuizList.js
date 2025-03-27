@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const QuizList = () => {
     const [quiz, setQuiz] = useState([]);
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchQuiz = async () => {
@@ -17,6 +19,9 @@ const QuizList = () => {
                 }
             } catch (err) {
                 setError("Error fetching quiz");
+                setTimeout(function(){
+                    navigate("/login")
+                },3000)
             }
         };
 
