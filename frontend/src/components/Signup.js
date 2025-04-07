@@ -94,5 +94,4 @@ const Signup = ({setUser})=>{
                     </>
                 )
 }
-
 export default Signup;
