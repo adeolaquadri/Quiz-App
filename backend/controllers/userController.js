@@ -9,17 +9,25 @@ const secretKey = process.env.secretkey
 
 export const addUser = async(req, res)=>{
    try{
-      const {username, pass} = req.body
+      const {username, email, pass, confirmpass} = req.body
       const salt = await bcryptjs.genSalt(10);
       const password = await bcryptjs.hash(pass, salt);
-      const token = jsonwebtoken.sign({ username: username }, secretKey);
-      const newUser = new userModel({
-        username, password, token
+      const token = jsonwebtoken.sign({ username: username, email: email }, secretKey);
+      const getNewUser = await userModel.findOne({
+         username:username,
+         email:email
       })
+      if(getNewUser)
+      return res.status(403).json({error: "User with the username or email provided already exist"})
+      const newUser = new userModel({
+        email, username, password, token
+      })
+      if(confirmpass !== pass)
+      return res.status(403).json({error: "Passwords do not match"})
    await newUser.save();
-   return res.status(200).json({Success: "User added successfully"})
+   return res.status(200).json({success: "User added successfully"})
 }catch(e){
-   return res.status(500).json({Error: e.message})
+   return res.status(500).json({error: e.message})
 }
 }
 
@@ -49,7 +57,7 @@ export const userAuth = async(req, res)=>{
             httpOnly: true,
             maxAge: process.env.expiresIn,
          })
-         return res.json({Message: "Login Successful!"})
+         return res.json({Message: "Login Successful!", user: req.user})
       }else{
          return res.status(404).json({Error: "Invalid Password!"})
       }

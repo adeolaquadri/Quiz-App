@@ -1,57 +1,75 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Header from "./Header.js";
+import Footer from "./Footer.js";
 
 const QuizList = () => {
-    const [quiz, setQuiz] = useState([]);
+    const [quizzes, setQuizzes] = useState([]);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const fetchQuiz = async () => {
+        const fetchQuizzes = async () => {
             try {
-                const response = await axios.get("http://localhost:4030/quiz", {withCredentials: true});
+                const response = await axios.get("http://localhost:4030/quiz", { withCredentials: true });
+                if (response.data.user) {
+                    setIsLoggedIn(true);
+                    setUser(response.data.user)
+                }
                 if (response.status === 403) {
-                    setError("Invalid Token")
-                }else {
-                    setQuiz(response.data);
-                    console.log(response.data)
+                    setError("Invalid Token");
+                    setTimeout(() => navigate("/login"), 2000);
+                } else {
+                    setQuizzes(response.data.quiz);
+                    console.log(response.data);
                 }
             } catch (err) {
-                setError("Error fetching quiz");
-                setTimeout(function(){
-                    navigate("/login")
-                },3000)
+                setIsLoggedIn(false)
+                setError("Error fetching quiz. Redirecting...");
+                setTimeout(() => navigate("/login"), 2000);
             }
         };
 
-        fetchQuiz();
-    }, []);
+        fetchQuizzes();
+    }, [navigate]);
 
-    // const Logout = async () => {
-    //     try {
-    //       const logout =  await axios.get("http://localhost:4030/logout");
-    //       console.log(logout.data.message)
-    //       if(logout && logout.data.message)
-    //         alert("Logged out!");
-    //         window.location.href = "/login"; // Redirect to login page
-    //     } catch (error) {
-    //         alert("Logout failed");
-    //     }
-    // };
+    const handleLogout = async () => {
+        try {
+          await axios.get("http://localhost:4030/logout", { withCredentials: true });
+          navigate("/login");
+        } catch (err) {
+          console.log("Logout failed", err);
+        }
+      };
     
-    if (error) return <h2>{error}</h2>;
-    if (!quiz) return <h2>Loading...</h2>;
-    return(
-      <>
-      <div>
-          <h2>Select Quiz...</h2>
-        {quiz.map((quiz, index) => 
-            <ul>
-               <li key={quiz._id}><a href={`http://localhost:3000/questionbyquiz/${quiz._id}`}>{quiz.title}</a></li>
-            </ul>
-         )}
-      </div>
-      </>
-    )}
+
+    if (error) return <h2 className="text-red-500 text-center">{error}</h2>;
+    if (quizzes.length === 0) return <h2 className="text-center text-lg">Loading...</h2>;
+
+    return (
+        <>
+        <Header username={user.username} email={user.email} isLoggedIn={isLoggedIn} onLogout={handleLogout}/>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-white to-blue-100 p-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {quizzes.map((quiz) => (
+                    <div key={quiz._id} className="w-60 h-80 rounded-xl bg-white shadow-lg flex flex-col justify-between">
+                        <div className="flex-grow flex items-center justify-center">
+                            <img src={quiz.image || "/default-quiz.png"} alt={quiz.title} className="w-24 h-24" />
+                        </div>
+                        <div className="text-center font-bold text-xl text-gray-800">{quiz.title}</div>
+                        <a href={`/question/${quiz._id}`} className="w-full py-3 bg-blue-500 text-white text-center font-medium rounded-b-xl hover:bg-blue-600 transition">
+                            Start Quiz
+                        </a>
+                    </div>
+                ))}
+            </div>
+        </div>
+        <Footer />
+        </>
+    );
+};
+
 export default QuizList;

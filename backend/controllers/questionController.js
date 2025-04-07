@@ -31,7 +31,7 @@ export const getQuestion = async(req, res)=>{
       if(questions.length === 0){
          return res.status(404).json({msg: "No question found!"})
       }
-      return res.status(200).json(questions)
+      return res.status(200).json({questions:questions, user:req.user})
    }catch(e){
       return res.status(500).json({'Error': e.message})
    }
@@ -43,6 +43,19 @@ export const deleteQuestion = async(req, res)=>{
       if(!deleteQuestionbyid){ res.status(404).json({msg: "Question not found"})}
       else{
       res.status(200).json({msg: "Question deleted successfully!"})
+      }
+   }catch(e){
+      return res.status(500).json({'Error': e.messsage})
+   }
+}
+
+export const updateQuestion = async(req, res)=>{
+   try{
+      const filter = {quizId: "67f162e2f89a2a5ecbdf5744"}
+      const updateQuestions = await questionModel.updateMany(filter, {$set:{quizId:"67f1d3e66802411a6c5283a4"}})
+      if(!updateQuestions){ res.status(404).json({msg: "Question not found"})}
+      else{
+      res.status(200).json({msg: "Questions updated successfully!"})
       }
    }catch(e){
       return res.status(500).json({'Error': e.messsage})

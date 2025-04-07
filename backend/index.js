@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import questionRoute from './Route/questionRoute.js'
 import quizRoute from './Route/quizRoute.js'
 import userRoute from './Route/userRoute.js'
+import scoreRoute from './Route/scoreRoute.js'
 
 dotenv.config()
 const app = express()
@@ -19,6 +20,7 @@ app.use(cors({
 app.use(questionRoute)
 app.use(quizRoute)
 app.use(userRoute)
+app.use(scoreRoute)
 const port = process.env.port
 mongoose.connect(process.env.MONGO_URL)
 .then(()=>{

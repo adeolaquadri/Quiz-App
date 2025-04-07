@@ -1,144 +1,186 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-
+import Header from "./Header";
+import Footer from "./Footer"
 
 const Quiz = () => {
-    const { quizId } = useParams(); // Get quiz ID from URL
+    const { quizId } = useParams();
     const [questions, setQuestions] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [image, setImage] = useState("")
+    const [quizInfo, setQuizInfo] = useState({});
     const [selectedOptions, setSelectedOptions] = useState({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchQuestions = async () => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:4030/questionbyquiz/${quizId}`,
-                    {withCredentials: true});
-                setQuestions(response.data);
-            } catch (error) {
-                navigate('/login')
-                console.error("Error fetching questions:", error);
+                const res = await axios.get(`http://localhost:4030/question/${quizId}`, {
+                    withCredentials: true
+                });
+                if (res.data.user) {
+                setIsLoggedIn(true);
+                setQuestions(res.data.questions);
+                setQuizInfo(res.data.quiz); // assuming quiz info has logo and techName
+                setUser(res.data.user);
+                }else{
+                    window.location.href = "/login"
+                }
+            } catch (err) {
+                console.error(err);
+                navigate("/login");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchQuestions();
+        fetchData();
+    }, [quizId]);
+    
+    useEffect(() => {
+        const fetchImage = async () => {
+            try {
+                const res = await axios.get(`http://localhost:4030/getImage/${quizId}`, {
+                    withCredentials: true
+                });
+                setImage(res.data.image);
+            } catch (err) {
+                setIsLoggedIn(false);
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchImage();
     }, [quizId]);
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const questionsPerPage = 1;
-
-    // Get Current questions
-    const indexOfLastQuestion = currentPage * questionsPerPage;
-    const indexofFirstQuestion = indexOfLastQuestion - questionsPerPage;
-    const currentQuestions = questions.slice(indexofFirstQuestion, indexOfLastQuestion);
     
+        const handleLogout = async () => {
+            try {
+              await axios.get("http://localhost:4030/logout", { withCredentials: true });
+              navigate("/login");
+            } catch (err) {
+              console.log("Logout failed", err);
+            }
+          };
 
-    // Handle page change
-    const nextPage = () =>{
-        if(currentPage < Math.ceil(questions.length / questionsPerPage)){
-            setCurrentPage(currentPage + 1);
+    const handleOptionChange = (questionId, option) => {
+        setSelectedOptions((prev) => ({
+            ...prev,
+            [questionId]: option,
+        }));
+    };
+
+    const nextPage = () => {
+        if (!selectedOptions[questions[currentPage - 1]._id]) {
+            alert("Please select an option before proceeding!");
+            return;
         }
- } 
- const prevPage = () =>{
-    if(currentPage > 1){
-        setCurrentPage(currentPage - 1);
- }
+        setCurrentPage((prev) => prev + 1);
+    };
 
-  }
+    const prevPage = () => {
+        setCurrentPage((prev) => prev - 1);
+    };
 
- // Handle option selection
- const handleOptionChange = (questionId, option) => {
-    setSelectedOptions((prev) => ({
-        ...prev,
-        [questionId]: option,
-    }));
-};
+    const handleSubmit = async () => {
+        let score = 0;
+        questions.forEach((q) => {
+            if (selectedOptions[q._id] === q.correctAnswer) {
+                score += 1;
+            }
+        });
 
-// Handle submission
-const handleSubmit = () => {
-    console.log("Selected Options:", selectedOptions);
+        const totalQuestions = questions.length;
+        const percentage = (score / totalQuestions) * 100;
+        const username = user?.username;
+        alert(`Dear ${username}, your score is ${score}/${totalQuestions}`);
 
-    // Example: Check answers
-    let score = 0;
-    questions.forEach((q) => {
-        if (selectedOptions[q._id] === q.correctAnswer) {
-            score += 1;
+        try {
+            await axios.post(
+                "http://localhost:4030/add-score",
+                { username, quizId, score, totalQuestions, percentage },
+                { withCredentials: true }
+            );
+        } catch (err) {
+            console.error("Failed to submit score:", err);
         }
-    });
+    };
 
-    alert(`Your score: ${score}/${questions.length}`);
-};
-    if (loading) return <p>Loading questions...</p>;
+    if (loading) return <p className="text-center mt-10 text-xl">Loading...</p>;
+
+    const currentQuestion = questions[currentPage - 1];
 
     return (
-        <>
-       <div>
-            <h2>Quiz</h2>
-            {currentQuestions.map((q) => (
-                <div key={q._id}>
-                    <h4>{q.question}</h4>
-
-                        <label key={q.options.a} style={{ display: "block" }}>
-                            <input
-                                type="radio"
-                                name={`question-${q._id}`}
-                                value="a"
-                                checked={selectedOptions[q._id] === "a"}
-                                onChange={() => handleOptionChange(q._id, "a")}
-                            />
-                            {q.options.a}
-                        </label>
-
-                        <label key={q.options.b} style={{ display: "block" }}>
-                            <input
-                                type="radio"
-                                name={`question-${q._id}`}
-                                value="b"
-                                checked={selectedOptions[q._id] === "b"}
-                                onChange={() => handleOptionChange(q._id, "b")}
-                            />
-                            {q.options.b}
-                        </label>
-
-                        <label key={q.options.c} style={{ display: "block" }}>
-                            <input
-                                type="radio"
-                                name={`question-${q._id}`}
-                                value="c"
-                                checked={selectedOptions[q._id] === "c"}
-                                onChange={() => handleOptionChange(q._id, "c")}
-                            />
-                            {q.options.c}
-                        </label>
-
+        <>  
+       <Header username={user.username} email={user.email} isLoggedIn={isLoggedIn} onLogout={handleLogout}/>     
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+            <div className="bg-[#0f172a] text-white rounded-xl shadow-xl w-full max-w-4xl flex flex-col overflow-hidden">
+                <div className="grid grid-cols-1 md:grid-cols-2">
+                    {/* LEFT SIDE */}
+                    <img src={image}></img>
+                    {/* RIGHT SIDE */}
+                    <div className="p-6 flex flex-col justify-center">
+                        <h3 className="text-xl font-semibold mb-4">{currentQuestion.question}</h3>
+                        <div className="space-y-4">
+                            {Object.entries(currentQuestion.options).map(([key, value]) => (
+                                <label
+                                    key={key}
+                                    className={`flex items-center gap-3 cursor-pointer p-3 rounded-md border ${
+                                        selectedOptions[currentQuestion._id] === key
+                                            ? "bg-green-600 border-green-500"
+                                            : "bg-gray-900 border-gray-700"
+                                    }`}
+                                >
+                                    <span className="font-bold text-green-400 text-lg">{key}</span>
+                                    <input
+                                        type="radio"
+                                        name={`question-${currentQuestion._id}`}
+                                        value={key}
+                                        checked={selectedOptions[currentQuestion._id] === key}
+                                        onChange={() => handleOptionChange(currentQuestion._id, key)}
+                                        className="hidden"
+                                    />
+                                    <span>{value}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
                 </div>
-            ))}
-            {/* <button onClick={handleSubmit} style={{ marginTop: "10px" }}>
-                Submit
-            </button> */}
-           {currentPage <= questions.length - 1 ? (
-            <div>
-                 <button onClick={prevPage} style={{ marginTop: "10px", marginRight: "20px"}}>
-                Prev
-            </button>
-                <button onClick={nextPage} style={{ marginTop: "10px" }}>
-                    Next
-                </button>
+
+                {/* FOOTER NAVIGATION */}
+                <div className="bg-black flex justify-between items-center p-4">
+                    <button
+                        onClick={prevPage}
+                        disabled={currentPage === 1}
+                        className="text-white font-medium disabled:opacity-50"
+                    >
+                        Previous
+                    </button>
+                    {currentPage < questions.length ? (
+                        <button
+                            onClick={nextPage}
+                            className="text-white font-medium"
+                        >
+                            Next
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleSubmit}
+                            className="text-white font-medium"
+                        >
+                            Submit
+                        </button>
+                    )}
                 </div>
-            ) : (
-                <div>
-            <button onClick={prevPage} style={{ marginTop: "10px", marginRight: "20px"}}>
-                Prev
-            </button>
-                <button onClick={handleSubmit} style={{ marginTop: "10px" }}>
-                    Submit
-                </button>
-                </div>
-            )}
+            </div>
         </div>
+        <Footer />
         </>
     );
 };

@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
 const scoreSchema = new mongoose.Schema({
-  userId: { 
-   type: mongoose.Schema.Types.ObjectId, 
-   ref: "userModel", required: true 
-},
+  username: {
+    type: String,
+    required: true,
+ },
   quizId: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: "quizModel", 
