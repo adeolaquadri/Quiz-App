@@ -47,7 +47,7 @@ const Quiz = () => {
         const fetchImage = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const res = await axios.get(`https://quiz-app-0yfq.onrender.com/${quizId}`,  {headers: {
+                const res = await axios.get(`https://quiz-app-0yfq.onrender.com/question/${quizId}`,  {headers: {
                     Authorization: `Bearer ${token}`,
                   },});
                 setImage(res.data.image);
