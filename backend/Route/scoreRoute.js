@@ -6,8 +6,8 @@ const router = Router()
 
 router.post('/add-score', verifyToken, addScore)
 
-router.get('/score', getAllScore)
+router.get('/score', verifyToken, getAllScore)
 
-router.delete('/score', deleteAllScore)
+router.delete('/score', verifyToken, deleteAllScore)
 
 export default router;

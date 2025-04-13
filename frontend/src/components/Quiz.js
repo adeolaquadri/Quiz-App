@@ -47,7 +47,7 @@ const Quiz = () => {
         const fetchImage = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const res = await axios.get(`http://localhost:4030/getImage/${quizId}`,  {headers: {
+                const res = await axios.get(`https://quiz-app-0yfq.onrender.com/${quizId}`,  {headers: {
                     Authorization: `Bearer ${token}`,
                   },});
                 setImage(res.data.image);
@@ -103,9 +103,11 @@ const Quiz = () => {
 
         try {
             await axios.post(
-                "http://localhost:4030/add-score",
+                "https://quiz-app-0yfq.onrender.com/add-score",
                 { username, quizId, score, totalQuestions, percentage },
-                { withCredentials: true }
+                {headers: {
+                    Authorization: `Bearer ${token}`,
+                  },}
             );
         } catch (err) {
             console.error("Failed to submit score:", err);

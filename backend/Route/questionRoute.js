@@ -4,14 +4,14 @@ import {verifyToken} from "../middlewares/authmiddleware.js"
 
 const router = Router()
 
-router.get('/questions', getQuestions)
+router.get('/questions', verifyToken, getQuestions)
 
 router.get('/question/:id', verifyToken, getQuestion)
 
-router.post('/question', addQuestion)
+router.post('/question', verifyToken, addQuestion)
 
-router.delete('/question/:id', deleteQuestion)
+router.delete('/question/:id', verifyToken, deleteQuestion)
 
-router.put('/update_question', updateQuestion)
+router.put('/update_question', verifyToken, updateQuestion)
 
 export default router;
