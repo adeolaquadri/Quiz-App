@@ -14,7 +14,7 @@ const Login = ({setUser})=>{
    const submitForm = async(event)=>{
     event.preventDefault();
     try {
-        const response = await axios.post("http://localhost:4030/login",
+        const response = await axios.post("https://quiz-app-0yfq.onrender.com/login",
              {username, password}, {withCredentials: true});
         if(response) {
           navigate('/quiz'); // Redirect after login 

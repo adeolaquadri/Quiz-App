@@ -19,7 +19,7 @@ const Quiz = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get(`http://localhost:4030/question/${quizId}`, {
+                const res = await axios.get(`https://quiz-app-0yfq.onrender.com/question/${quizId}`, {
                     withCredentials: true
                 });
                 if (res.data.user) {

@@ -14,7 +14,7 @@ const QuizList = () => {
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                const response = await axios.get("http://localhost:4030/quiz", { withCredentials: true });
+                const response = await axios.get("https://quiz-app-0yfq.onrender.com/quiz", { withCredentials: true });
                 if (response.data.user) {
                     setIsLoggedIn(true);
                     setUser(response.data.user)
@@ -38,7 +38,7 @@ const QuizList = () => {
 
     const handleLogout = async () => {
         try {
-          await axios.get("http://localhost:4030/logout", { withCredentials: true });
+          await axios.get("https://quiz-app-0yfq.onrender.com/logout", { withCredentials: true });
           navigate("/login");
         } catch (err) {
           console.log("Logout failed", err);
