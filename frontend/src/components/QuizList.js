@@ -14,7 +14,10 @@ const QuizList = () => {
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                const response = await axios.get("https://quiz-app-0yfq.onrender.com/quiz", { withCredentials: true });
+                const response = await axios.get("https://quiz-app-0yfq.onrender.com/quiz", 
+                       {headers: {
+                          Authorization: `Bearer ${token}`,
+                        },});
                 if (response.data.user) {
                     setIsLoggedIn(true);
                     setUser(response.data.user)
@@ -36,14 +39,12 @@ const QuizList = () => {
         fetchQuizzes();
     }, [navigate]);
 
-    const handleLogout = async () => {
-        try {
-          await axios.get("https://quiz-app-0yfq.onrender.com/logout", { withCredentials: true });
-          navigate("/login");
-        } catch (err) {
-          console.log("Logout failed", err);
-        }
-      };
+        const handleLogout = () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            navigate("/login");
+          };
+         
     
 
     if (error) return <h2 className="text-red-500 text-center">{error}</h2>;

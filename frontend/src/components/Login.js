@@ -16,11 +16,15 @@ const Login = ({setUser})=>{
     try {
         const response = await axios.post("https://quiz-app-0yfq.onrender.com/login",
              {username, password}, {withCredentials: true});
-        if(response) {
-          navigate('/quiz'); // Redirect after login 
-        }else{
-          console.error("Login failed");
-        }
+             if (response.data.token) {
+              // Store token in localStorage
+              localStorage.setItem("token", response.data.token);
+        
+              // Optional: store user data
+              localStorage.setItem("user", JSON.stringify(response.data.user));
+        
+              navigate('/quiz');
+            }
         }catch (error) {
         console.error("Login failed:", error.response.data.Error);
         alert(error.response.data.Error);

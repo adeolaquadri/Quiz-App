@@ -43,30 +43,31 @@ export const getUser = async(req, res)=>{
    }
 }
 
-export const userAuth = async(req, res)=>{
-   try{
-      const {username, password} = req.body
-      const user = await userModel.findOne({username})
-      if(!user){         
-      return res.status(404).json({Error: "Invalid Credential"})
-      }
-      const isPasswordValid = await bcryptjs.compare(password, user.password)
-      if(isPasswordValid){
-         const token = user.token
-         res.cookie("token", token, {
-            httpOnly: true,
-            secure: true,           // Must be true in production (HTTPS only)
-            sameSite: "None",       // Needed for cross-origin (Render <-> Vercel)
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
-          });
-         return res.json({Message: "Login Successful!", user: req.user})
-      }else{
-         return res.status(404).json({Error: "Invalid Password!"})
-      }
-   }catch(e){
-      return res.status(500).json({Error: e.message})
+export const userAuth = async (req, res) => {
+   try {
+     const { username, password } = req.body;
+     const user = await userModel.findOne({ username });
+ 
+     if (!user) {
+       return res.status(404).json({ Error: "Invalid Credential" });
+     }
+ 
+     const isPasswordValid = await bcryptjs.compare(password, user.password);
+ 
+     if (isPasswordValid) {
+       const token = jwt.sign({ username: user.username, email: user.email }, process.env.secretkey, {
+         expiresIn: "1d",
+       });
+ 
+       return res.json({ message: "Login Successful!", token, user });
+     } else {
+       return res.status(401).json({ Error: "Invalid Password!" });
+     }
+   } catch (e) {
+     return res.status(500).json({ Error: e.message });
    }
-}
+ };
+ 
 
 export const deleteUser = async(req, res)=>{
    try{

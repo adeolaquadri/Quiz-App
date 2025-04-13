@@ -44,9 +44,9 @@ const Quiz = () => {
     useEffect(() => {
         const fetchImage = async () => {
             try {
-                const res = await axios.get(`http://localhost:4030/getImage/${quizId}`, {
-                    withCredentials: true
-                });
+                const res = await axios.get(`http://localhost:4030/getImage/${quizId}`,   {headers: {
+                    Authorization: `Bearer ${token}`,
+                  },});
                 setImage(res.data.image);
             } catch (err) {
                 setIsLoggedIn(false);
@@ -60,14 +60,11 @@ const Quiz = () => {
     }, [quizId]);
 
     
-        const handleLogout = async () => {
-            try {
-              await axios.get("http://localhost:4030/logout", { withCredentials: true });
-              navigate("/login");
-            } catch (err) {
-              console.log("Logout failed", err);
-            }
-          };
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
+      };
 
     const handleOptionChange = (questionId, option) => {
         setSelectedOptions((prev) => ({
