@@ -22,8 +22,8 @@ const Login = ({setUser})=>{
           console.error("Login failed");
         }
         }catch (error) {
-        console.error("Login failed:", error.response.data.error);
-        alert(error.response.data.error);
+        console.error("Login failed:", error.response.data.Error);
+        alert(error.response.data.Error);
       }
    }
 

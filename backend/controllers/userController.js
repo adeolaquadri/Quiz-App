@@ -93,9 +93,11 @@ export const updateUser = async(req, res)=>{
    }
 }
 export const logoutUser = async(req, res) => {
-   res.cookie('token', "",{
-      maxAge: 1,
-      httpOnly: true
-  });
+   res.cookie("token", token, {
+      httpOnly: true,
+      secure: true, // true means cookie only sent over HTTPS
+      sameSite: "None", // Needed for cross-site requests (Render → Vercel)
+    });
+    
   res.json({ message: "Logged out successfully!" });
 };
