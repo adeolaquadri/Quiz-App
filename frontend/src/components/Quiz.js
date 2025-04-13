@@ -19,9 +19,11 @@ const Quiz = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get(`https://quiz-app-0yfq.onrender.com/question/${quizId}`, {
-                    withCredentials: true
-                });
+                const token = localStorage.getItem("token");
+                const res = await axios.get(`https://quiz-app-0yfq.onrender.com/question/${quizId}`, 
+                     {headers: {
+                    Authorization: `Bearer ${token}`,
+                  },});
                 if (res.data.user) {
                 setIsLoggedIn(true);
                 setQuestions(res.data.questions);
@@ -44,6 +46,7 @@ const Quiz = () => {
     useEffect(() => {
         const fetchImage = async () => {
             try {
+                const token = localStorage.getItem("token");
                 const res = await axios.get(`http://localhost:4030/getImage/${quizId}`,   {headers: {
                     Authorization: `Bearer ${token}`,
                   },});

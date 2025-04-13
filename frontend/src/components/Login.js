@@ -15,7 +15,7 @@ const Login = ({setUser})=>{
     event.preventDefault();
     try {
         const response = await axios.post("https://quiz-app-0yfq.onrender.com/login",
-             {username, password}, {withCredentials: true});
+             {username, password}, );
              if (response.data.token) {
               // Store token in localStorage
               localStorage.setItem("token", response.data.token);

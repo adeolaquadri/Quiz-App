@@ -14,6 +14,7 @@ const QuizList = () => {
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
+                const token = localStorage.getItem("token");
                 const response = await axios.get("https://quiz-app-0yfq.onrender.com/quiz", 
                        {headers: {
                           Authorization: `Bearer ${token}`,
