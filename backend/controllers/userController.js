@@ -1,6 +1,6 @@
 import userModel from "../models/user.js"
 import bcryptjs from 'bcryptjs'
-import jsonwebtoken  from 'jsonwebtoken'
+import jwt  from 'jsonwebtoken'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -12,7 +12,7 @@ export const addUser = async(req, res)=>{
       const {username, email, pass, confirmpass} = req.body
       const salt = await bcryptjs.genSalt(10);
       const password = await bcryptjs.hash(pass, salt);
-      const token = jsonwebtoken.sign({ username: username, email: email }, secretKey);
+      const token = jwt.sign({ username: username, email: email }, secretKey);
       const getNewUser = await userModel.findOne({
          username:username,
          email:email
