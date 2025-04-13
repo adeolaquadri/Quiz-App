@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get("http://localhost:4030/quiz", { withCredentials: true });
+        const res = await axios.get("https://quiz-app-0yfq.onrender.com/quiz", { withCredentials: true });
         setUser(res.data.user);
         setIsLoggedIn(true);
       } catch (err) {
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.get("http://localhost:4030/logout", { withCredentials: true });
+      await axios.get("https://quiz-app-0yfq.onrender.com/logout", { withCredentials: true });
       setIsLoggedIn(false);
       setUser({ username: "", email: "" });
     } catch (err) {
