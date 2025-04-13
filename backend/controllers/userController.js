@@ -55,7 +55,7 @@ export const userAuth = async (req, res) => {
      const isPasswordValid = await bcryptjs.compare(password, user.password);
  
      if (isPasswordValid) {
-       const token = jwt.sign({ username: user.username, email: user.email }, process.env.secretkey, {
+       const token = jsonwebtoken.sign({ username: user.username, email: user.email }, process.env.secretkey, {
          expiresIn: "1d",
        });
  
