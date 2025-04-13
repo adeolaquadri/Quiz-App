@@ -102,6 +102,7 @@ const Quiz = () => {
         alert(`Dear ${username}, your score is ${score}/${totalQuestions}`);
 
         try {
+            const token = localStorage.getItem("token");
             await axios.post(
                 "https://quiz-app-0yfq.onrender.com/add-score",
                 { username, quizId, score, totalQuestions, percentage },
