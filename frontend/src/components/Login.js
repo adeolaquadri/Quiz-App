@@ -15,38 +15,64 @@ const Login = ({setUser})=>{
     event.preventDefault();
     try {
         const response = await axios.post("http://localhost:4030/login",
-             { username, password }, {withCredentials: true});
+             {username, password}, {withCredentials: true});
         if(response) {
           navigate('/quiz'); // Redirect after login 
         }else{
           console.error("Login failed");
         }
         }catch (error) {
-        console.error("Login failed:", error.response.data.Error);
-        alert(error.response.data.Error);
+        console.error("Login failed:", error.response.data.error);
+        alert(error.response.data.error);
       }
    }
 
     return(
-        <div className='text-left'>
-            <div className='m-[auto] mt-[50px] w-[fit-content] h-[auto] p-[10px] bg-gray-400'>
-            <h1 className='text-center text-2xl'>Login to take Quiz</h1><br />
-            <form onSubmit={submitForm}>
-                <label className='text-xl text-left'>Username: </label><br />
-                <input className='w-[300px] p-[5px] border-none outline-none' 
-               placeholder='enter your username' value={username} onChange={(e)=> setUsername(e.target.value)}
-                type="text" name="username" required/><br /><br />
+      <>
+      <Header />
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-[865px] p-10 bg-white rounded-lg shadow-lg">
+        <h1 className="text-center font-poppins text-3xl font-semibold">WELCOME BACK</h1>
+        <p className="text-gray-500 text-center">Welcome back! Please enter your details.</p>
+    
+        <form className="mt-8" onSubmit={submitForm}>
 
-                <label className='text-xl'>Password: </label><br />
-                <input className='w-[300px] p-[5px] border-none outline-none'
-                placeholder='enter your password' value={password} onChange={(e)=> setPassword(e.target.value)}
-                 type="password" name="pass" required/><br /><br /><br />
+          <label className="block text-left font-medium">Username</label>
+          <input 
+            className="w-full p-3 border rounded-md outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter your username"
+            value={username} 
+            onChange={(e) => setUsername(e.target.value)}
+            type="text" required 
+          />
+    
+          <label className="block text-left font-medium mt-4">Password</label>
+          <input 
+            className="w-full p-3 border rounded-md outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="******************"
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)}
+            type="password" required 
+          />
 
-                <button type='submit' className='w-[100%] text-2xl p-[5px]  bg-white text-black'>Login</button>
-                </form>
-                </div>
-                </div>
+          <button 
+            type="submit"
+            className="w-full h-12 bg-red-500 text-white text-lg font-semibold rounded-md mt-6 hover:bg-red-600 transition"
+          >
+            Sign in
+          </button>
+    
+          <p className="mt-4 text-center text-gray-600">
+            Don't have an account? 
+            <a href="/signup" className="text-red-500 hover:underline"> Sign up!</a>
+          </p>
+        </form>
+      </div>
+    </div>
+    <Footer />
+    
+    
+                    </>
                 )
 }
-
 export default Login;
