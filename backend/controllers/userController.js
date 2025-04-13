@@ -55,8 +55,9 @@ export const userAuth = async(req, res)=>{
          const token = user.token
          res.cookie("token", token, {
             httpOnly: true,
-            secure: true, // true means cookie only sent over HTTPS
-            sameSite: "None", // Needed for cross-site requests (Render → Vercel)
+            secure: true,           // Must be true in production (HTTPS only)
+            sameSite: "None",       // Needed for cross-origin (Render <-> Vercel)
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
           });
          return res.json({Message: "Login Successful!", user: req.user})
       }else{
@@ -93,10 +94,12 @@ export const updateUser = async(req, res)=>{
       res.status(500).json({Error: e.message})
    }
 }
-export const logoutUser = async(req, res) => {
-   res.cookie('token', "",{
-      maxAge: 1,
-      httpOnly: true
-  });
-  res.json({ message: "Logged out successfully!" });
-};
+export const logoutUser = async (req, res) => {
+   res.clearCookie('token', {
+     httpOnly: true,
+     secure: true,
+     sameSite: "None"
+   });
+   res.status(200).json({ message: "Logged out successfully" });
+ };
+ 
