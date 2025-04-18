@@ -127,13 +127,13 @@ const Quiz = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
       
       {/* LEFT SIDE - Image */}
-      <div className="w-full h-full">
+      {/* <div className="w-full h-full">
         <img 
           src={image} 
           alt="Quiz" 
           className="w-full h-full object-cover rounded-md"
         />
-      </div>
+      </div> */}
 
       {/* RIGHT SIDE - Question and Options */}
       <div className="p-4 flex flex-col justify-center">
